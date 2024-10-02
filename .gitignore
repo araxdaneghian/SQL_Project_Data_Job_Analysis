@@ -1,0 +1,6 @@
+/.DS_Store
+/.vscode
+/CREATE DATABASE sql_course.sql
+/csv_files
+/manipulate_table.sql
+/postgres.session.sql

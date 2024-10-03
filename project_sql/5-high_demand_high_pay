@@ -1,0 +1,74 @@
+-- 5. what are the most optimal skills to learn?  for Data Analyst & remote jobs
+    -- a. optimal: High demand AND high Paying
+
+
+-- High Demand
+
+WITH skills_demand AS (
+SELECT
+    skills_dim.skill_id,
+    skills_dim.skills,
+    count(skills_job_dim.job_id) as demand_count
+FROM job_postings_fact
+INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+WHERE
+    job_title_short = 'Data Analyst' AND
+    job_location = 'Anywhere' AND
+    salary_year_avg IS NOT NULL
+GROUP BY
+    skills_dim.skill_id
+), avg_salary AS (  -- high salary skills
+SELECT
+    skills_dim.skill_id,
+    ROUND(AVG(salary_year_avg), 0) AS skill_avg_salary
+FROM   
+    job_postings_fact
+INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+WHERE
+        job_title_short = 'Data Analyst' AND
+        job_location = 'Anywhere' AND
+        salary_year_avg IS NOT NULL
+GROUP BY
+    skills_dim.skill_id
+)
+
+SELECT
+    skills_demand.skill_id,
+    skills_demand.skills,
+    demand_count,
+    skill_avg_salary
+FROM
+    skills_demand
+INNER JOIN avg_salary ON skills_demand.skill_id = avg_salary.skill_id
+WHERE
+     demand_count >10
+ORDER BY  -- you can chose how to sort
+    skill_avg_salary DESC,
+    demand_count DESC
+LIMIT 25
+
+
+
+My method
+-- high demand and high paying
+SELECT
+    skills,
+    count(skills) as demand_count,
+    ROUND(AVG(salary_year_avg), 0) AS skill_avg_salary,
+    (ROUND(AVG(salary_year_avg), 0) * count(skills)) AS optimal
+
+FROM job_postings_fact
+INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+WHERE
+    job_title_short = 'Data Analyst' 
+    AND job_location = 'Anywhere'
+    AND salary_year_avg IS NOT NULL
+GROUP BY
+    skills
+ORDER BY
+    optimal DESC
+LIMIT 10
+

@@ -65,6 +65,6 @@ LIMIT 10
 - copy relative path
 - put path in ()
 
-![image](assets/sample-plot-matplot.png)
+![image](project_sql/assets/sample-plot-matplot.png)
 
 use chat gpt to get table format
